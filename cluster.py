@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 
 class distance_matrix_cluster:
-    def __init__(self, top_n=5, similar_delta=0.2, optimizer="min-delta", step_size=0.05, fuzzy_cluster=False, fuzzy_cluster_similarity=0.5):
     """
     Clustering of data in a matrix of distance values (like cosine distances).
     The clustering will performed based on the parameters and will create clusters with numeric cluster title, the cluster 0 will cover the elements with no cluster detected (this could be the fuzzy data not fitting to other data points). The parameters will allow to steer the cluster detection in terms of grade for similarity for clustered values and fuzzy nearby values. In addition an optimization of clusters can be selected to get clusters based on the similarity based on the data itself.
@@ -55,6 +54,8 @@ class distance_matrix_cluster:
 
 
     """
+    
+    def __init__(self, top_n=5, similar_delta=0.2, optimizer="min-delta", step_size=0.05, fuzzy_cluster=False, fuzzy_cluster_similarity=0.5):
         # all initial settings for the ml class
         self.top_n = top_n
         self.min_delta = similar_delta
