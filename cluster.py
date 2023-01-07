@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 
 class distance_matrix_cluster:
-    def __init__(self, top_n=5, similar_delta=0.2, optimizer="min-delta", step_size=0.05, fussy_cluster=False, fussy_cluster_similarity=0.5):
+    def __init__(self, top_n=5, similar_delta=0.2, optimizer="min-delta", step_size=0.05, fuzzy_cluster=False, fuzzy_cluster_similarity=0.5):
     """
     Clustering of data in a matrix of distance values (like cosine distances).
-    The clustering will performed based on the parameters and will create clusters with numeric cluster title, the cluster 0 will cover the elements with no cluster detected (this could be the fussy data not fitting to other data points). The parameters will allow to steer the cluster detection in terms of grade for similarity for clustered values and fuzzy nearby values. In addition an optimization of clusters can be selected to get clusters based on the similarity based on the data itself.
+    The clustering will performed based on the parameters and will create clusters with numeric cluster title, the cluster 0 will cover the elements with no cluster detected (this could be the fuzzy data not fitting to other data points). The parameters will allow to steer the cluster detection in terms of grade for similarity for clustered values and fuzzy nearby values. In addition an optimization of clusters can be selected to get clusters based on the similarity based on the data itself.
 
     ...
 
@@ -20,9 +20,9 @@ class distance_matrix_cluster:
         'min-delta'=calculate the cluster from 1 downwards with the step_size parameter and detect the clustering, with the minimum of average distance in the cluster shapes.
     step_size : (step_size=0.05)
         step_size for the optimization
-    fuzzy_cluster : (fussy_cluster=False)
-        When set to true, the clusters with no clusterdetection in the first clustering will be set to the closest cluster, if the distance is below the fussy_cluster_similarity. 
-    fussy_cluster_similarity : (fussy_cluster_similarity=0.5)
+    fuzzy_cluster : (fuzzy_cluster=False)
+        When set to true, the clusters with no clusterdetection in the first clustering will be set to the closest cluster, if the distance is below the fuzzy_cluster_similarity. 
+    fuzzy_cluster_similarity : (fuzzy_cluster_similarity=0.5)
         Maximum similarity of a closest cluster point for fuzzy data clustering.
 
     Methods
@@ -48,8 +48,8 @@ class distance_matrix_cluster:
                 "step_size": ..., # step_size
                 "delta_steps": ..., # value list for optimization
                 "result_values": ..., # clustering result
-                "fussy_cluster": ..., # fuzzy cluster allocation
-                "fussy_cluster_min": ..., # min value for fuzzy cluster allocation
+                "fuzzy_cluster": ..., # fuzzy cluster allocation
+                "fuzzy_cluster_min": ..., # min value for fuzzy cluster allocation
 
             }
 
@@ -67,11 +67,11 @@ class distance_matrix_cluster:
         self.result = None
         self.delta_values = []
         self.result_values = []
-        self.fussy_cluster = fussy_cluster
-        self.fussy_min = fussy_cluster_similarity
+        self.fuzzy_cluster = fuzzy_cluster
+        self.fuzzy_min = fuzzy_cluster_similarity
 
     def __pt_eval(self, value):
-        pt_eval_dict = {0:"fussy", 1:"border", 2:"border", 3:"point"}
+        pt_eval_dict = {0:"fuzzy", 1:"border", 2:"border", 3:"point"}
         return pt_eval_dict[value]
 
     def __cluster_matrix(self, matrix, top_n=5, min_delta=0.2):
@@ -250,13 +250,13 @@ class distance_matrix_cluster:
         
     def transform(self, data):
         transformation = []
-        if self.fussy_cluster:
+        if self.fuzzy_cluster:
             # self.grp_0 cluster_closest
-            fussy_distance_list = self.grp_0.copy()
-            fussy_distance_list[fussy_distance_list > self.fussy_min] = 0
-            fussy_distance_list[fussy_distance_list != 0] = 1
-            additional_fussy_cluster = np.array(self.result["cluster_closest"].tolist())*fussy_distance_list
-            transformation = np.array(self.output) + additional_fussy_cluster
+            fuzzy_distance_list = self.grp_0.copy()
+            fuzzy_distance_list[fuzzy_distance_list > self.fuzzy_min] = 0
+            fuzzy_distance_list[fuzzy_distance_list != 0] = 1
+            additional_fuzzy_cluster = np.array(self.result["cluster_closest"].tolist())*fuzzy_distance_list
+            transformation = np.array(self.output) + additional_fuzzy_cluster
         else:
             transformation = np.array(self.output)
         
@@ -281,8 +281,8 @@ class distance_matrix_cluster:
             "step_size": self.step_size,
             "delta_steps": self.delta_values,
             "result_values": self.result_values,
-            "fussy_cluster": self.fussy_cluster,
-            "fussy_cluster_min": self.fussy_min,
+            "fuzzy_cluster": self.fuzzy_cluster,
+            "fuzzy_cluster_min": self.fuzzy_min,
 
         }
         return parameter
